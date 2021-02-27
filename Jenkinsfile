@@ -1,37 +1,38 @@
+ 
 pipeline {
-	agent none
-	stages{
+    agent none
+    stages {
+	
+	stage('Non-Parallel Stage') {
+	    agent {
+                        label "master"
+                }
+        steps {
+                echo 'This stage will be executed first'
+                }
+        }
 
-	stage('Non parallel stage'){
-		agent{
-					label "master"
-
+	
+        stage('Run Tests') {
+            parallel {
+                stage('Test On Windows') {
+                    agent {
+                        label "l"
+                    }
+                    steps {
+                        echo "Task1 on Agent"
+                    }
+                    
+                }
+                stage('Test On Master') {
+                    agent {
+                        label "master"
+                    }
+                    steps {
+						echo "Task1 on Master"
 					}
-		steps{
-				echo 'This stage is executed first'
-		}
-	}
-
-	stage('Run test'){
-		parallel{
-			stage('test on windows'){
-				agent{
-					label "l"
-				}
-				steps{
-					echo "task1 on agent"
-				}
-			}
-			stage('test on master'){
-				agent{
-					label "master"
-			}
-				steps{
-					echo "task1 on master"
-				}
-
-			}
-		}
-	}
-	}
+                }
+            }
+        }
+    }
 }
